@@ -1,5 +1,6 @@
 package danny.Paint;
 
+import lombok.Getter;
 import lombok.Setter;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -7,7 +8,6 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -17,16 +17,19 @@ import java.util.List;
 class Canvas extends JPanel implements MouseListener, MouseMotionListener
 {
 	// Image To Add Color To Canvas Until Drawing Begins (Temporary)
-	private static final Image COLOR_PALETTE = new ImageIcon(Canvas.class.getResource("../../colorpalette.png")).getImage();
+	private static final Image COLOR_PALETTE = new ImageIcon(Canvas.class.getResource("/colorpalette.png")).getImage();
 
 	private boolean drawing;
-	private Point startPoint;
-	private Point currentPoint;
-	private Point endPoint;
-	private List<Point> pointsToDraw;
+	private ShapeToDraw shapeToDraw;
+	private List<ShapeToDraw> shapesToDraw;
 
+	@Getter
 	@Setter
-	private Color paintColor;
+	private static Color paintColor = Color.BLACK;
+
+	@Getter
+	@Setter
+	private static Shape shape = Shape.POINT;
 
 	Canvas()
 	{
@@ -42,9 +45,10 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	private void clearCanvas()
 	{
 		drawing = false;
-		startPoint = null;
-		endPoint = null;
-		pointsToDraw = new ArrayList<>();
+		shapeToDraw = null;
+		shapesToDraw = new ArrayList<>();
+		paintColor = Color.BLACK;
+		shape = Shape.POINT;
 	}
 
 	private void paintInstructions(Graphics graphics)
@@ -88,17 +92,39 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		{
 			// TODO: Add Support For Drawing Various Size Dots, Lines, And Shapes As Well As Drawing As The Mouse Moves
 
-			// Draws Rectangle Properly (Top Left To Bottom Right ONLY!)
-			if (startPoint != null && endPoint != null)
+			if (!shapesToDraw.isEmpty())
 			{
-				graphics.drawRect(startPoint.x, startPoint.y, endPoint.x - startPoint.x, endPoint.y - startPoint.y);
-			}
+				// Loop Through The Shapes To Draw
+				for (ShapeToDraw shapeToBeDrawn : shapesToDraw)
+				{
+					// Set The Color Based On The Color Of The Shape When The User Began Drawing It
+					graphics.setColor(shapeToBeDrawn.getColor());
 
-			// Draws Individual Pixels Properly
-			for (Point point : pointsToDraw)
-			{
-				graphics.drawRoundRect(point.x, point.y, 3, 3, 2, 2);
-				graphics.fillRoundRect(point.x, point.y, 3, 3, 2, 2);
+					// Handle various shapes
+					switch (shapeToBeDrawn.getShape())
+					{
+						case POINT:
+						{
+							graphics.fillRoundRect(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y, 3, 3, 2, 2);
+							break;
+						}
+						case LINE:
+						{
+							graphics.drawLine(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y, shapeToBeDrawn.getEndPoint().x, shapeToBeDrawn.getEndPoint().y);
+							break;
+						}
+						case RECTANGLE:
+						{
+							graphics.drawRect(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y, shapeToBeDrawn.getEndPoint().x - shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getEndPoint().y - shapeToBeDrawn.getStartPoint().y);
+							break;
+						}
+						case CIRCLE:
+						{
+							graphics.drawOval(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y, shapeToBeDrawn.getEndPoint().x - shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getEndPoint().y - shapeToBeDrawn.getStartPoint().y);
+							break;
+						}
+					}
+				}
 			}
 		}
 	}
@@ -126,11 +152,9 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		// Allow Drawing
 		drawing = true;
 
-		// Get The Point The User Pressed The Mouse Button At
-		startPoint = e.getPoint();
-
-		// Track The Points The User Has Pressed The Mouse Button At
-		pointsToDraw.add(startPoint);
+		// Create A Shape To Draw
+		shapeToDraw = new ShapeToDraw(e.getPoint(), paintColor, shape);
+		shapesToDraw.add(shapeToDraw);
 	}
 
 	/**
@@ -141,8 +165,11 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	@Override
 	public void mouseReleased(MouseEvent e)
 	{
-		// Get The Point The User Released The Mouse Button At (For Drawing Shapes)
-		endPoint = e.getPoint();
+		// Update End Point So The User Can See Their Final Shape
+		shapeToDraw.setEndPoint(e.getPoint());
+
+		// Save The Shape To Draw
+		shapesToDraw.add(shapeToDraw);
 
 		// For Drawing To The Canvas As The User Releases The Mouse Button!!! (IMPORTANT)
 		repaint();
@@ -186,14 +213,27 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	@Override
 	public void mouseDragged(MouseEvent e)
 	{
-		// Get The Point The User Is Dragging The Mouse At
-		currentPoint = e.getPoint();
-
-		// If The Points To Draw Does Not Already Contain The Point The User Is Dragging The Mouse At
-		if (!pointsToDraw.contains(currentPoint))
+		// Handle The Various Shapes As The Mouse Drags (To Show What You Are Drawing Before Mouse Releases)
+		switch (shape)
 		{
-			// Add The Current Point To Be Drawn
-			pointsToDraw.add(currentPoint);
+			case POINT:
+			{
+				// If The Current Paint Shape Is Point, Draw One Point Each Time The Mouse Drags (Free-Hand Painting)
+				shapeToDraw = new ShapeToDraw(e.getPoint(), paintColor, shape);
+				if (!shapesToDraw.contains(shapeToDraw))
+				{
+					shapesToDraw.add(shapeToDraw);
+				}
+				break;
+			}
+			case LINE:
+			case RECTANGLE:
+			case CIRCLE:
+			{
+				// If The Current Paint Shape Is Line/Rectangle/Circle, Update The End Point As The Mouse Moves
+				shapeToDraw.setEndPoint(e.getPoint());
+				break;
+			}
 		}
 
 		// For Drawing To The Canvas As The User Drags The Mouse!!! (IMPORTANT)

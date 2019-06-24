@@ -4,11 +4,10 @@ import lombok.Getter;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.SwingUtilities;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class MenuBar implements ActionListener
+class MenuBar implements ActionListener
 {
 	private static final JMenu FILE = new JMenu("File");
 	private static final JMenuItem NEW_WINDOW = new JMenuItem("New Window");
@@ -17,7 +16,7 @@ public class MenuBar implements ActionListener
 	private static final JMenuItem ABOUT = new JMenuItem("About");
 
 	@Getter
-	public JMenuBar menuBar;
+	private JMenuBar menuBar;
 
 	MenuBar()
 	{
@@ -60,15 +59,8 @@ public class MenuBar implements ActionListener
 				ABOUT.removeActionListener(this);
 				Window.getWindow().dispose();
 
-				// Run The New Paint Application Window On The Event-Dispatch Thread To Ensure Thread Safety
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run()
-					{
-						// Create A New Paint Application Window
-						new Window();
-					}
-				});
+				// Call Main In The Launcher Class To Run A New Paint Window On The Event-Dispatch Thread
+				Launcher.main(null);
 				break;
 			}
 			case "Close":
