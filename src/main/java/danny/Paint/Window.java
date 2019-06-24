@@ -17,6 +17,9 @@ class Window
 	@Getter
 	private static JFrame window;
 
+	@Getter
+	private static Canvas canvas;
+
 	Window()
 	{
 		// Create A New Paint Application Window
@@ -41,7 +44,7 @@ class Window
 
 		// Create A Paint Toolbar And Canvas For Painting
 		JToolBar paintToolbar = new PaintToolbar().getPaintToolbar();
-		Canvas canvas = new Canvas();
+		canvas = new Canvas();
 
 		// Set The Paint Toolbar And Canvas To Be Horizontally Parallel
 		layout.setHorizontalGroup(layout.createParallelGroup()
