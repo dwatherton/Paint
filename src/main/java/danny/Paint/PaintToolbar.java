@@ -5,6 +5,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
 import javax.swing.border.LineBorder;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -18,13 +19,13 @@ import java.awt.image.BufferedImage;
 
 class PaintToolbar
 {
-	// Standard Button Width, Height, Border Thickness, And Divider Dimensions
+	// Standard Button Width, Height, Border Thickness, And Separator Dimensions
 	private static final int BUTTON_WIDTH = 50;
 	private static final int BUTTON_HEIGHT = 50;
 	private static final int BORDER_THICKNESS = 1;
-	private static final Dimension SEPARATOR_DIMENSIONS = new Dimension(10, BUTTON_HEIGHT);
+	private static final Dimension SEPARATOR_DIMENSIONS = new Dimension(BUTTON_WIDTH / 5, BUTTON_HEIGHT);
 
-	// Color Selection Buttons
+	// Paint Color Selection Buttons
 	private JButton black;
 	private JButton white;
 	private JButton red;
@@ -40,10 +41,16 @@ class PaintToolbar
 	private JButton rectangle;
 	private JButton circle;
 
+	// Paint Brush Size Buttons
+	private JButton brushSize1;
+	private JButton brushSize2;
+	private JButton brushSize3;
+	private JButton brushSize4;
+
 	// Currently Selected Buttons (Color, Shape, Size) - For Highlighting The Actively Selected Button(s)
-	private JButton currentColor;
+	private JButton currentPaintColor;
 	private JButton currentShape;
-	private JButton currentSize;
+	private JButton currentBrushSize;
 
 	@Getter
 	private JToolBar paintToolbar;
@@ -67,10 +74,10 @@ class PaintToolbar
 		addQuickColorButtonListeners();
 
 		// Set Current Color Button To Black And Highlight It's Border
-		currentColor = black;
+		currentPaintColor = black;
 		black.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
 
-		// Add A Seperator Between Groups Of Button Containers
+		// Add A Separator Between Groups Of Button Containers
 		paintToolbar.addSeparator(SEPARATOR_DIMENSIONS);
 
 		// Add Generic Quick Shape Selection Buttons
@@ -81,10 +88,21 @@ class PaintToolbar
 		currentShape = point;
 		point.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
 
-		// Add A Seperator Between Groups Of Button Containers
+		// Add A Separator Between Groups Of Button Containers
 		paintToolbar.addSeparator(SEPARATOR_DIMENSIONS);
 
-		// TODO: Add Buttons to Paint Toolbar for brush size, shape, color, etc.
+		// Add Generic Brush Size Selection Buttons
+		addQuickSizeButtons();
+		addQuickSizeButtonListeners();
+
+		// Set Current Brush Size To Brush Size 1 And Highlight It's Border
+		currentBrushSize = brushSize1;
+		brushSize1.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+
+		// Add A Separator Between Groups Of Button Containers
+		paintToolbar.addSeparator(SEPARATOR_DIMENSIONS);
+
+		// TODO: Add Buttons to Paint Toolbar for brush size, shape, paintColor, etc.
 	}
 
 	private JButton createColorButton(Color color)
@@ -150,9 +168,9 @@ class PaintToolbar
 				}
 
 				Canvas.setPaintColor(Color.BLACK);
-				currentColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+				currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
 				black.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentColor = black;
+				currentPaintColor = black;
 			}
 		});
 
@@ -167,9 +185,9 @@ class PaintToolbar
 				}
 
 				Canvas.setPaintColor(Color.WHITE);
-				currentColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+				currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
 				white.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentColor = white;
+				currentPaintColor = white;
 			}
 		});
 
@@ -184,9 +202,9 @@ class PaintToolbar
 				}
 
 				Canvas.setPaintColor(Color.RED);
-				currentColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+				currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
 				red.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentColor = red;
+				currentPaintColor = red;
 			}
 		});
 
@@ -201,9 +219,9 @@ class PaintToolbar
 				}
 
 				Canvas.setPaintColor(Color.ORANGE);
-				currentColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+				currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
 				orange.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentColor = orange;
+				currentPaintColor = orange;
 			}
 		});
 
@@ -218,9 +236,9 @@ class PaintToolbar
 				}
 
 				Canvas.setPaintColor(Color.YELLOW);
-				currentColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+				currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
 				yellow.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentColor = yellow;
+				currentPaintColor = yellow;
 			}
 		});
 
@@ -235,9 +253,9 @@ class PaintToolbar
 				}
 
 				Canvas.setPaintColor(Color.GREEN);
-				currentColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+				currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
 				green.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentColor = green;
+				currentPaintColor = green;
 			}
 		});
 
@@ -252,9 +270,9 @@ class PaintToolbar
 				}
 
 				Canvas.setPaintColor(Color.BLUE);
-				currentColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+				currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
 				blue.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentColor = blue;
+				currentPaintColor = blue;
 			}
 		});
 
@@ -269,9 +287,9 @@ class PaintToolbar
 				}
 
 				Canvas.setPaintColor(Color.PINK);
-				currentColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+				currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
 				pink.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentColor = pink;
+				currentPaintColor = pink;
 			}
 		});
 	}
@@ -394,6 +412,115 @@ class PaintToolbar
 				currentShape.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
 				circle.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
 				currentShape = circle;
+			}
+		});
+	}
+
+	private JButton createQuickSizeButton(int brushSize)
+	{
+		BufferedImage image = new BufferedImage(BUTTON_WIDTH, BUTTON_HEIGHT / 5, ColorSpace.TYPE_RGB);
+		Graphics2D graphics = image.createGraphics();
+		graphics.setColor(Color.WHITE);
+		graphics.fillRect(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT / 5);
+		graphics.setStroke(new BasicStroke(brushSize));
+		graphics.setColor(Color.BLACK);
+		graphics.drawLine(10, 5, 40, 5);
+		JButton brushSizeButton = new JButton(new ImageIcon(image));
+		brushSizeButton.setBorder(new LineBorder(Color.DARK_GRAY, 1));
+		brushSizeButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT / 5);
+		brushSizeButton.setToolTipText("Brush Size: " + brushSize);
+		return brushSizeButton;
+	}
+
+	private void addQuickSizeButtons()
+	{
+		// Create The Generic Brush Size Buttons With Tool Tips
+		brushSize1 = createQuickSizeButton(1);
+		brushSize2 = createQuickSizeButton(2);
+		brushSize3 = createQuickSizeButton(3);
+		brushSize4 = createQuickSizeButton(4);
+
+		// Create A Brush Size Button Container For Holding A 4x1 Row Of Generic Brush Size Buttons
+		Container sizeContainer = new Container();
+		sizeContainer.setLayout(new GridLayout(4, 1, 0, BORDER_THICKNESS));
+
+		// Add Brush Size Buttons To The Container
+		sizeContainer.add(brushSize1);
+		sizeContainer.add(brushSize2);
+		sizeContainer.add(brushSize3);
+		sizeContainer.add(brushSize4);
+
+		// Add The Container With 4 Rows Of Brush Size Buttons To The Paint Toolbar
+		paintToolbar.add(sizeContainer);
+	}
+
+	private void addQuickSizeButtonListeners()
+	{
+		brushSize1.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				if (Canvas.getBrushSize() == 1)
+				{
+					return;
+				}
+
+				Canvas.setBrushSize(1);
+				currentBrushSize.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+				brushSize1.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+				currentBrushSize = brushSize1;
+			}
+		});
+
+		brushSize2.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				if (Canvas.getBrushSize() == 2)
+				{
+					return;
+				}
+
+				Canvas.setBrushSize(2);
+				currentBrushSize.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+				brushSize2.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+				currentBrushSize = brushSize2;
+			}
+		});
+
+		brushSize3.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				if (Canvas.getBrushSize() == 3)
+				{
+					return;
+				}
+
+				Canvas.setBrushSize(3);
+				currentBrushSize.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+				brushSize3.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+				currentBrushSize = brushSize3;
+			}
+		});
+
+		brushSize4.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				if (Canvas.getBrushSize() == 4)
+				{
+					return;
+				}
+
+				Canvas.setBrushSize(4);
+				currentBrushSize.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+				brushSize4.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+				currentBrushSize = brushSize4;
 			}
 		});
 	}

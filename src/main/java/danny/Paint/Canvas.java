@@ -4,9 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -31,6 +33,10 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	@Setter
 	private static Shape shape = Shape.POINT;
 
+	@Getter
+	@Setter
+	private static int brushSize = 1;
+
 	Canvas()
 	{
 		// Initialize Canvas Variables And/Or Clear The Canvas For When The User Selects 'File' > 'New Window'
@@ -49,19 +55,20 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		shapesToDraw = new ArrayList<>();
 		paintColor = Color.BLACK;
 		shape = Shape.POINT;
+		brushSize = 1;
 	}
 
-	private void paintInstructions(Graphics graphics)
+	private void paintInstructions(Graphics2D graphics2D)
 	{
 		// Set Image X and Image Y For Centering The Color Palette Image
 		int imageX = (getWidth() / 2) - (COLOR_PALETTE.getWidth(null) / 2);
 		int imageY = (getHeight() / 2) - (COLOR_PALETTE.getHeight(null) / 2);
 
 		// Draw Color Palette Image To Center Of Canvas
-		graphics.drawImage(COLOR_PALETTE, imageX, imageY, null);
+		graphics2D.drawImage(COLOR_PALETTE, imageX, imageY, null);
 
 		// Get Font Metrics For Centering Instruction String
-		FontMetrics fm = graphics.getFontMetrics();
+		FontMetrics fm = graphics2D.getFontMetrics();
 
 		// Set Instruction Message, Width, And Height (Ascent)
 		String instructions = "To Begin Painting Simply Select A Style And Begin Drawing!";
@@ -73,8 +80,8 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		int instructionsY = imageY - (instructionsHeight * 3);
 
 		// Set Color And Write The Instructions To The Canvas
-		graphics.setColor(Color.BLACK);
-		graphics.drawString(instructions, instructionsX, instructionsY);
+		graphics2D.setColor(Color.BLACK);
+		graphics2D.drawString(instructions, instructionsX, instructionsY);
 	}
 
 	@Override
@@ -82,11 +89,11 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	{
 		// Paint The Canvas (JPanel Component)
 		super.paintComponent(graphics);
-		graphics.setColor(paintColor);
+		Graphics2D graphics2D = (Graphics2D) graphics;
 
 		if (!drawing)
 		{
-			paintInstructions(graphics);
+			paintInstructions(graphics2D);
 		}
 		else
 		{
@@ -97,30 +104,31 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 				// Loop Through The Shapes To Draw
 				for (ShapeToDraw shapeToBeDrawn : shapesToDraw)
 				{
-					// Set The Color Based On The Color Of The Shape When The User Began Drawing It
-					graphics.setColor(shapeToBeDrawn.getColor());
+					// Set The Paint Color And Brush Size Based On Their Values When The User Began Drawing The Shape
+					graphics2D.setColor(shapeToBeDrawn.getPaintColor());
+					graphics2D.setStroke(new BasicStroke(shapeToBeDrawn.getBrushSize()));
 
-					// Handle various shapes
+					// Handle Various Shapes
 					switch (shapeToBeDrawn.getShape())
 					{
 						case POINT:
 						{
-							graphics.fillRoundRect(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y, 3, 3, 2, 2);
+							graphics2D.drawLine(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y, shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y);
 							break;
 						}
 						case LINE:
 						{
-							graphics.drawLine(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y, shapeToBeDrawn.getEndPoint().x, shapeToBeDrawn.getEndPoint().y);
+							graphics2D.drawLine(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y, shapeToBeDrawn.getEndPoint().x, shapeToBeDrawn.getEndPoint().y);
 							break;
 						}
 						case RECTANGLE:
 						{
-							graphics.drawRect(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y, shapeToBeDrawn.getEndPoint().x - shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getEndPoint().y - shapeToBeDrawn.getStartPoint().y);
+							graphics2D.drawRect(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y, shapeToBeDrawn.getEndPoint().x - shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getEndPoint().y - shapeToBeDrawn.getStartPoint().y);
 							break;
 						}
 						case CIRCLE:
 						{
-							graphics.drawOval(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y, shapeToBeDrawn.getEndPoint().x - shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getEndPoint().y - shapeToBeDrawn.getStartPoint().y);
+							graphics2D.drawOval(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y, shapeToBeDrawn.getEndPoint().x - shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getEndPoint().y - shapeToBeDrawn.getStartPoint().y);
 							break;
 						}
 					}
@@ -153,7 +161,7 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		drawing = true;
 
 		// Create A Shape To Draw
-		shapeToDraw = new ShapeToDraw(e.getPoint(), paintColor, shape);
+		shapeToDraw = new ShapeToDraw(e.getPoint(), paintColor, shape, brushSize, false);
 		shapesToDraw.add(shapeToDraw);
 	}
 
@@ -219,7 +227,7 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 			case POINT:
 			{
 				// If The Current Paint Shape Is Point, Draw One Point Each Time The Mouse Drags (Free-Hand Painting)
-				shapeToDraw = new ShapeToDraw(e.getPoint(), paintColor, shape);
+				shapeToDraw = new ShapeToDraw(e.getPoint(), paintColor, shape, brushSize, false);
 				if (!shapesToDraw.contains(shapeToDraw))
 				{
 					shapesToDraw.add(shapeToDraw);
