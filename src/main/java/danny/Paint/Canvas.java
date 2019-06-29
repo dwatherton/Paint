@@ -108,27 +108,36 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 					graphics2D.setColor(shapeToBeDrawn.getPaintColor());
 					graphics2D.setStroke(new BasicStroke(shapeToBeDrawn.getBrushSize()));
 
-					// Handle Various Shapes
+					// Get The Shapes Start Coordinates (Pick The Smallest Of The Coordinates For Drawing Rectangles/Circles In ANY Direction - Shapes go TL -> BR)
+					final int startX = Math.min(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getEndPoint().x);
+					final int startY = Math.min(shapeToBeDrawn.getStartPoint().y, shapeToBeDrawn.getEndPoint().y);
+
+					// Get The Shapes End Coordinates
+					final int endX = shapeToBeDrawn.getEndPoint().x;
+					final int endY = shapeToBeDrawn.getEndPoint().y;
+
+					// Get The Shapes Dimensions (Pick The Largest Of The Coordinates For Drawing Rectangles/Circles In ANY Direction And Subtract The Start Coord)
+					final int width = Math.max(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getEndPoint().x) - startX;
+					final int height = Math.max(shapeToBeDrawn.getStartPoint().y, shapeToBeDrawn.getEndPoint().y) - startY;
+
+					// Handle Drawing The Various Shapes
 					switch (shapeToBeDrawn.getShape())
 					{
 						case POINT:
-						{
-							graphics2D.drawLine(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y, shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y);
-							break;
-						}
 						case LINE:
 						{
-							graphics2D.drawLine(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y, shapeToBeDrawn.getEndPoint().x, shapeToBeDrawn.getEndPoint().y);
+							// Use The Shape To Be Drawn Coordinates From When The Mouse Was Pressed For A Point/Line (They Can Already Be Drawn In ANY Direction)
+							graphics2D.drawLine(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y, endX, endY);
 							break;
 						}
 						case RECTANGLE:
 						{
-							graphics2D.drawRect(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y, shapeToBeDrawn.getEndPoint().x - shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getEndPoint().y - shapeToBeDrawn.getStartPoint().y);
+							graphics2D.drawRect(startX, startY, width, height);
 							break;
 						}
 						case CIRCLE:
 						{
-							graphics2D.drawOval(shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getStartPoint().y, shapeToBeDrawn.getEndPoint().x - shapeToBeDrawn.getStartPoint().x, shapeToBeDrawn.getEndPoint().y - shapeToBeDrawn.getStartPoint().y);
+							graphics2D.drawOval(startX, startY, width, height);
 							break;
 						}
 					}
@@ -161,7 +170,7 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		drawing = true;
 
 		// Create A Shape To Draw
-		shapeToDraw = new ShapeToDraw(e.getPoint(), paintColor, shape, brushSize, false);
+		shapeToDraw = new ShapeToDraw(e.getPoint(), e.getPoint(), paintColor, shape, brushSize, false);
 		shapesToDraw.add(shapeToDraw);
 	}
 
@@ -227,7 +236,7 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 			case POINT:
 			{
 				// If The Current Paint Shape Is Point, Draw One Point Each Time The Mouse Drags (Free-Hand Painting)
-				shapeToDraw = new ShapeToDraw(e.getPoint(), paintColor, shape, brushSize, false);
+				shapeToDraw = new ShapeToDraw(e.getPoint(), e.getPoint(), paintColor, shape, brushSize, false);
 				if (!shapesToDraw.contains(shapeToDraw))
 				{
 					shapesToDraw.add(shapeToDraw);

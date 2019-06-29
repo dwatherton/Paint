@@ -31,10 +31,10 @@ class ShapeToDraw
 	@Setter
 	private boolean isFilled;
 
-	// Constructor For The Information We Know When The User Presses The Mouse Button To Draw (Info From Paint Toolbar And Mouse)
-	ShapeToDraw(Point startPoint, Color paintColor, Shape shape, int brushSize, boolean isFilled)
+	ShapeToDraw(Point startPoint, Point endPoint, Color paintColor, Shape shape, int brushSize, boolean isFilled)
 	{
 		this.startPoint = startPoint;
+		this.endPoint = endPoint;
 		this.paintColor = paintColor;
 		this.shape = shape;
 		this.brushSize = brushSize;
