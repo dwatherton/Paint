@@ -6,15 +6,7 @@ class Launcher
 {
 	public static void main(String[] args)
 	{
-		// Run The Paint Application On The Event-Dispatch Thread To Ensure Thread Safety
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				// Create Paint Application Window
-				new Window();
-			}
-		});
+		// Create The Paint Application Window On The Event-Dispatch Thread To Ensure Thread Safety
+		SwingUtilities.invokeLater(Window::new);
 	}
 }

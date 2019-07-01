@@ -114,6 +114,8 @@ class PaintToolbar
 		JButton colorButton = new JButton(new ImageIcon(image));
 		colorButton.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
 		colorButton.setSize(BUTTON_WIDTH / 2, BUTTON_HEIGHT / 2);
+		// Set Focusable To FALSE To Allow The Paint Application's Canvas To Be The Only Component With A Key Listener AKA The Default. (Avoids Tabbing To Canvas)!
+		colorButton.setFocusable(false);
 		return colorButton;
 	}
 
@@ -157,140 +159,108 @@ class PaintToolbar
 
 	private void addQuickColorButtonListeners()
 	{
-		black.addActionListener(new ActionListener()
+		black.addActionListener(e ->
 		{
-			@Override
-			public void actionPerformed(ActionEvent e)
+			if (Canvas.getPaintColor() == Color.BLACK)
 			{
-				if (Canvas.getPaintColor() == Color.BLACK)
-				{
-					return;
-				}
-
-				Canvas.setPaintColor(Color.BLACK);
-				currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
-				black.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentPaintColor = black;
+				return;
 			}
+
+			Canvas.setPaintColor(Color.BLACK);
+			currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+			black.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+			currentPaintColor = black;
 		});
 
-		white.addActionListener(new ActionListener()
+		white.addActionListener(e ->
 		{
-			@Override
-			public void actionPerformed(ActionEvent e)
+			if (Canvas.getPaintColor() == Color.WHITE)
 			{
-				if (Canvas.getPaintColor() == Color.WHITE)
-				{
-					return;
-				}
-
-				Canvas.setPaintColor(Color.WHITE);
-				currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
-				white.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentPaintColor = white;
+				return;
 			}
+
+			Canvas.setPaintColor(Color.WHITE);
+			currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+			white.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+			currentPaintColor = white;
 		});
 
-		red.addActionListener(new ActionListener()
+		red.addActionListener(e ->
 		{
-			@Override
-			public void actionPerformed(ActionEvent e)
+			if (Canvas.getPaintColor() == Color.RED)
 			{
-				if (Canvas.getPaintColor() == Color.RED)
-				{
-					return;
-				}
-
-				Canvas.setPaintColor(Color.RED);
-				currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
-				red.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentPaintColor = red;
+				return;
 			}
+
+			Canvas.setPaintColor(Color.RED);
+			currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+			red.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+			currentPaintColor = red;
 		});
 
-		orange.addActionListener(new ActionListener()
+		orange.addActionListener(e ->
 		{
-			@Override
-			public void actionPerformed(ActionEvent e)
+			if (Canvas.getPaintColor() == Color.ORANGE)
 			{
-				if (Canvas.getPaintColor() == Color.ORANGE)
-				{
-					return;
-				}
-
-				Canvas.setPaintColor(Color.ORANGE);
-				currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
-				orange.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentPaintColor = orange;
+				return;
 			}
+
+			Canvas.setPaintColor(Color.ORANGE);
+			currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+			orange.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+			currentPaintColor = orange;
 		});
 
-		yellow.addActionListener(new ActionListener()
+		yellow.addActionListener(e ->
 		{
-			@Override
-			public void actionPerformed(ActionEvent e)
+			if (Canvas.getPaintColor() == Color.YELLOW)
 			{
-				if (Canvas.getPaintColor() == Color.YELLOW)
-				{
-					return;
-				}
-
-				Canvas.setPaintColor(Color.YELLOW);
-				currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
-				yellow.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentPaintColor = yellow;
+				return;
 			}
+
+			Canvas.setPaintColor(Color.YELLOW);
+			currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+			yellow.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+			currentPaintColor = yellow;
 		});
 
-		green.addActionListener(new ActionListener()
+		green.addActionListener(e ->
 		{
-			@Override
-			public void actionPerformed(ActionEvent e)
+			if (Canvas.getPaintColor() == Color.GREEN)
 			{
-				if (Canvas.getPaintColor() == Color.GREEN)
-				{
-					return;
-				}
-
-				Canvas.setPaintColor(Color.GREEN);
-				currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
-				green.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentPaintColor = green;
+				return;
 			}
+
+			Canvas.setPaintColor(Color.GREEN);
+			currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+			green.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+			currentPaintColor = green;
 		});
 
-		blue.addActionListener(new ActionListener()
+		blue.addActionListener(e ->
 		{
-			@Override
-			public void actionPerformed(ActionEvent e)
+			if (Canvas.getPaintColor() == Color.BLUE)
 			{
-				if (Canvas.getPaintColor() == Color.BLUE)
-				{
-					return;
-				}
-
-				Canvas.setPaintColor(Color.BLUE);
-				currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
-				blue.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentPaintColor = blue;
+				return;
 			}
+
+			Canvas.setPaintColor(Color.BLUE);
+			currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+			blue.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+			currentPaintColor = blue;
 		});
 
-		pink.addActionListener(new ActionListener()
+		pink.addActionListener(e ->
 		{
-			@Override
-			public void actionPerformed(ActionEvent e)
+			if (Canvas.getPaintColor() == Color.PINK)
 			{
-				if (Canvas.getPaintColor() == Color.PINK)
-				{
-					return;
-				}
-
-				Canvas.setPaintColor(Color.PINK);
-				currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
-				pink.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentPaintColor = pink;
+				return;
 			}
+
+			Canvas.setPaintColor(Color.PINK);
+			currentPaintColor.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+			pink.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+			currentPaintColor = pink;
 		});
 	}
 
@@ -320,6 +290,8 @@ class PaintToolbar
 		shapeButton.setBorder(new LineBorder(Color.DARK_GRAY, 1));
 		shapeButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		shapeButton.setToolTipText(shape);
+		// Set Focusable To FALSE To Allow The Paint Application's Canvas To Be The Only Component With A Key Listener AKA The Default. (Avoids Tabbing To Canvas)!
+		shapeButton.setFocusable(false);
 		return shapeButton;
 	}
 
@@ -347,72 +319,55 @@ class PaintToolbar
 
 	private void addQuickShapeButtonListeners()
 	{
-		point.addActionListener(new ActionListener()
+		point.addActionListener(e ->
 		{
-			@Override
-			public void actionPerformed(ActionEvent e)
+			if (Canvas.getShape() == Shape.POINT)
 			{
-				if (Canvas.getShape() == Shape.POINT)
-				{
-					return;
-				}
-
-				Canvas.setShape(Shape.POINT);
-				currentShape.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
-				point.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentShape = point;
+				return;
 			}
+
+			Canvas.setShape(Shape.POINT);
+			currentShape.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+			point.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+			currentShape = point;
 		});
 
-		line.addActionListener(new ActionListener()
+		line.addActionListener(e ->
 		{
-			@Override
-			public void actionPerformed(ActionEvent e)
+			if (Canvas.getShape() == Shape.LINE)
 			{
-				if (Canvas.getShape() == Shape.LINE)
-				{
-					return;
-				}
-
-				Canvas.setShape(Shape.LINE);
-				currentShape.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
-				line.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentShape = line;
+				return;
 			}
+
+			Canvas.setShape(Shape.LINE);
+			currentShape.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+			line.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+			currentShape = line;
 		});
 
-		rectangle.addActionListener(new ActionListener()
+		rectangle.addActionListener(e ->
 		{
-			@Override
-			public void actionPerformed(ActionEvent e)
+			if (Canvas.getShape() == Shape.RECTANGLE)
 			{
-				if (Canvas.getShape() == Shape.RECTANGLE)
-				{
-					return;
-				}
-
-				Canvas.setShape(Shape.RECTANGLE);
-				currentShape.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
-				rectangle.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentShape = rectangle;
+				return;
 			}
+			Canvas.setShape(Shape.RECTANGLE);
+			currentShape.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+			rectangle.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+			currentShape = rectangle;
 		});
 
-		circle.addActionListener(new ActionListener()
+		circle.addActionListener(e ->
 		{
-			@Override
-			public void actionPerformed(ActionEvent e)
+			if (Canvas.getShape() == Shape.CIRCLE)
 			{
-				if (Canvas.getShape() == Shape.CIRCLE)
-				{
-					return;
-				}
-
-				Canvas.setShape(Shape.CIRCLE);
-				currentShape.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
-				circle.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentShape = circle;
+				return;
 			}
+
+			Canvas.setShape(Shape.CIRCLE);
+			currentShape.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+			circle.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+			currentShape = circle;
 		});
 	}
 
@@ -429,6 +384,8 @@ class PaintToolbar
 		brushSizeButton.setBorder(new LineBorder(Color.DARK_GRAY, 1));
 		brushSizeButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT / 5);
 		brushSizeButton.setToolTipText("Brush Size: " + brushSize);
+		// Set Focusable To FALSE To Allow The Paint Application's Canvas To Be The Only Component With A Key Listener AKA The Default. (Avoids Tabbing To Canvas)!
+		brushSizeButton.setFocusable(false);
 		return brushSizeButton;
 	}
 
@@ -456,72 +413,56 @@ class PaintToolbar
 
 	private void addQuickSizeButtonListeners()
 	{
-		brushSize1.addActionListener(new ActionListener()
+		brushSize1.addActionListener(e ->
 		{
-			@Override
-			public void actionPerformed(ActionEvent e)
+			if (Canvas.getBrushSize() == 1)
 			{
-				if (Canvas.getBrushSize() == 1)
-				{
-					return;
-				}
-
-				Canvas.setBrushSize(1);
-				currentBrushSize.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
-				brushSize1.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentBrushSize = brushSize1;
+				return;
 			}
+
+			Canvas.setBrushSize(1);
+			currentBrushSize.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+			brushSize1.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+			currentBrushSize = brushSize1;
 		});
 
-		brushSize2.addActionListener(new ActionListener()
+		brushSize2.addActionListener(e ->
 		{
-			@Override
-			public void actionPerformed(ActionEvent e)
+			if (Canvas.getBrushSize() == 2)
 			{
-				if (Canvas.getBrushSize() == 2)
-				{
-					return;
-				}
-
-				Canvas.setBrushSize(2);
-				currentBrushSize.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
-				brushSize2.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentBrushSize = brushSize2;
+				return;
 			}
+
+			Canvas.setBrushSize(2);
+			currentBrushSize.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+			brushSize2.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+			currentBrushSize = brushSize2;
 		});
 
-		brushSize3.addActionListener(new ActionListener()
+		brushSize3.addActionListener(e ->
 		{
-			@Override
-			public void actionPerformed(ActionEvent e)
+			if (Canvas.getBrushSize() == 3)
 			{
-				if (Canvas.getBrushSize() == 3)
-				{
-					return;
-				}
-
-				Canvas.setBrushSize(3);
-				currentBrushSize.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
-				brushSize3.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentBrushSize = brushSize3;
+				return;
 			}
+
+			Canvas.setBrushSize(3);
+			currentBrushSize.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+			brushSize3.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+			currentBrushSize = brushSize3;
 		});
 
-		brushSize4.addActionListener(new ActionListener()
+		brushSize4.addActionListener(e ->
 		{
-			@Override
-			public void actionPerformed(ActionEvent e)
+			if (Canvas.getBrushSize() == 4)
 			{
-				if (Canvas.getBrushSize() == 4)
-				{
-					return;
-				}
-
-				Canvas.setBrushSize(4);
-				currentBrushSize.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
-				brushSize4.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
-				currentBrushSize = brushSize4;
+				return;
 			}
+
+			Canvas.setBrushSize(4);
+			currentBrushSize.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
+			brushSize4.setBorder(new LineBorder(Color.YELLOW, BORDER_THICKNESS));
+			currentBrushSize = brushSize4;
 		});
 	}
 }

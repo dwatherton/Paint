@@ -10,20 +10,27 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
-class Canvas extends JPanel implements MouseListener, MouseMotionListener
+class Canvas extends JPanel implements MouseListener, MouseMotionListener, KeyListener
 {
 	// Image To Add Color To Canvas Until Drawing Begins (Temporary)
 	private static final Image COLOR_PALETTE = new ImageIcon(Canvas.class.getResource("/colorpalette.png")).getImage();
 
-	private boolean drawing;
+	private boolean isDrawing;
+	private boolean isLeftMouseButtonDown;
 	private ShapeToDraw shapeToDraw;
 	private List<ShapeToDraw> shapesToDraw;
+
+	// Removed Shapes Stack Is For Undo/Redo Function
+	private Stack<ShapeToDraw> removedShapes;
 
 	@Getter
 	@Setter
@@ -44,15 +51,22 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 
 		// Set Canvas Background Color And Add Mouse Listener For Painting
 		setBackground(Color.WHITE);
+
+		// Set Canvas To Focusable To Allow The Key Listener For Undo/Redo Function
+		setFocusable(true);
+
+		// Add Listeners For Drawing With The Mouse And Undoing/Redoing With The Keyboard Shortcuts (Ctrl + Z) OR (Cmd + Z)/(Ctrl + Y) OR (Cmd + Shift + Z)
 		addMouseListener(this);
 		addMouseMotionListener(this);
+		addKeyListener(this);
 	}
 
 	private void clearCanvas()
 	{
-		drawing = false;
+		isDrawing = false;
 		shapeToDraw = null;
 		shapesToDraw = new ArrayList<>();
+		removedShapes = new Stack<>();
 		paintColor = Color.BLACK;
 		shape = Shape.POINT;
 		brushSize = 1;
@@ -91,7 +105,7 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		super.paintComponent(graphics);
 		Graphics2D graphics2D = (Graphics2D) graphics;
 
-		if (!drawing)
+		if (!isDrawing)
 		{
 			paintInstructions(graphics2D);
 		}
@@ -155,7 +169,13 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	@Override
 	public void mouseClicked(MouseEvent e)
 	{
-
+		// If Right-Click And Shape To Draw Is Not Null, Remove Shape From The List Of Shapes To Draw And Null It Out (Stops Drawing The Dragged Shape Being Drawn)
+		if (isLeftMouseButtonDown && e.getButton() == MouseEvent.BUTTON3 && shapeToDraw != null)
+		{
+			shapesToDraw.removeIf(s -> s != null && (s.getStartPoint() == shapeToDraw.getStartPoint() && s.getEndPoint() == shapeToDraw.getEndPoint()));
+			shapeToDraw = null;
+			repaint();
+		}
 	}
 
 	/**
@@ -166,12 +186,31 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
-		// Allow Drawing
-		drawing = true;
+		if (e.getButton() == MouseEvent.BUTTON1)
+		{
+			// Set Left Mouse Button Down To True
+			isLeftMouseButtonDown = true;
 
-		// Create A Shape To Draw
-		shapeToDraw = new ShapeToDraw(e.getPoint(), e.getPoint(), paintColor, shape, brushSize, false);
-		shapesToDraw.add(shapeToDraw);
+			// Allow Drawing
+			isDrawing = true;
+
+			if (!e.isShiftDown())
+			{
+				// Create A Shape To Draw
+				shapeToDraw = new ShapeToDraw(e.getPoint(), e.getPoint(), paintColor, shape, brushSize, false);
+				shapesToDraw.add(shapeToDraw);
+
+				// If The User Has Hit Undo And Added Shapes To The Removed Shapes Stack
+				if (removedShapes.size() >= 1)
+				{
+					// Create A New Stack Each Time A New Shape Is Drawn (Only Allow The Redo Feature AFTER The User Hits Undo)
+					removedShapes = new Stack<>();
+				}
+
+				// Repaint The Canvas
+				repaint();
+			}
+		}
 	}
 
 	/**
@@ -182,14 +221,23 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	@Override
 	public void mouseReleased(MouseEvent e)
 	{
-		// Update End Point So The User Can See Their Final Shape
-		shapeToDraw.setEndPoint(e.getPoint());
+		if (e.getButton() == MouseEvent.BUTTON1)
+		{
+			// Set Left Mouse Button Down To False
+			isLeftMouseButtonDown = false;
 
-		// Save The Shape To Draw
-		shapesToDraw.add(shapeToDraw);
+			if (shapeToDraw != null)
+			{
+				// Update End Point So The User Can See Their Final Shape
+				shapeToDraw.setEndPoint(e.getPoint());
 
-		// For Drawing To The Canvas As The User Releases The Mouse Button!!! (IMPORTANT)
-		repaint();
+				// Save The Shape To Draw
+				shapesToDraw.add(shapeToDraw);
+
+				// For Drawing To The Canvas As The User Releases The Mouse Button!!! (IMPORTANT)
+				repaint();
+			}
+		}
 	}
 
 	/**
@@ -225,7 +273,7 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	 * <code>MOUSE_DRAGGED</code> events may not be delivered during a native
 	 * Drag&amp;Drop operation.
 	 *
-	 * @param e
+	 * @param e The MouseEvent that was performed by the mouse being dragged on the Paint Application's Canvas.
 	 */
 	@Override
 	public void mouseDragged(MouseEvent e)
@@ -235,11 +283,14 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		{
 			case POINT:
 			{
-				// If The Current Paint Shape Is Point, Draw One Point Each Time The Mouse Drags (Free-Hand Painting)
-				shapeToDraw = new ShapeToDraw(e.getPoint(), e.getPoint(), paintColor, shape, brushSize, false);
-				if (!shapesToDraw.contains(shapeToDraw))
+				if (e.getButton() == MouseEvent.BUTTON1)
 				{
-					shapesToDraw.add(shapeToDraw);
+					// If The Current Paint Shape Is Point, Draw One Point Each Time The Mouse Drags (Free-Hand Painting)
+					shapeToDraw = new ShapeToDraw(e.getPoint(), e.getPoint(), paintColor, shape, brushSize, false);
+					if (!shapesToDraw.contains(shapeToDraw))
+					{
+						shapesToDraw.add(shapeToDraw);
+					}
 				}
 				break;
 			}
@@ -247,8 +298,12 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 			case RECTANGLE:
 			case CIRCLE:
 			{
-				// If The Current Paint Shape Is Line/Rectangle/Circle, Update The End Point As The Mouse Moves
-				shapeToDraw.setEndPoint(e.getPoint());
+				// Make Sure The User Didn't Click The Right Mouse Button To Quit Drawing The Current Line/Rectangle/Circle (Shift + Drag Updates A Shapes Endpoint)
+				if ((shapeToDraw != null) && (e.getButton() == MouseEvent.BUTTON1 || (e.isShiftDown() && e.getButton() == MouseEvent.BUTTON1)))
+				{
+					// If The Current Paint Shape Is Line/Rectangle/Circle, Update The End Point As The Mouse Moves
+					shapeToDraw.setEndPoint(e.getPoint());
+				}
 				break;
 			}
 		}
@@ -261,11 +316,110 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	 * Invoked when the mouse cursor has been moved onto a component
 	 * but no buttons have been pushed.
 	 *
-	 * @param e
+	 * @param e The MouseEvent that was performed by the mouse being moved around on the Paint Application's Canvas.
 	 */
 	@Override
 	public void mouseMoved(MouseEvent e)
 	{
 
+	}
+
+	/**
+	 * Invoked when a key has been typed.
+	 * See the class description for {@link KeyEvent} for a definition of
+	 * a key typed event.
+	 *
+	 * @param e The KeyEvent that was performed by typing a key on the Paint Application's Canvas.
+	 */
+	@Override
+	public void keyTyped(KeyEvent e)
+	{
+
+	}
+
+	/**
+	 * Invoked when a key has been pressed.
+	 * See the class description for {@link KeyEvent} for a definition of
+	 * a key pressed event.
+	 *
+	 * @param e The KeyEvent that was performed by pressing a key on the Paint Application's Canvas.
+	 */
+	@Override
+	public void keyPressed(KeyEvent e)
+	{
+		if (userTypedUndoKeys(e))
+		{
+			System.out.println("User Pressed 'Undo' Keyboard Shortcut");
+
+			// Make Sure There Are Shapes Currently Drawn On The Canvas, Otherwise Return
+			if (shapesToDraw.size() == 0)
+			{
+				return;
+			}
+
+			// Get The Last Shape Added To The Shapes To Draw List
+			shapeToDraw = shapesToDraw.get(shapesToDraw.size() - 1);
+
+			// Add It To The Removed Shapes Stack
+			removedShapes.push(shapeToDraw);
+
+			// Remove The Shape To Draw From The List Of Shapes To Draw
+			shapesToDraw.removeIf(s -> s != null && (s.getStartPoint() == shapeToDraw.getStartPoint() && s.getEndPoint() == shapeToDraw.getEndPoint()));
+
+			// Set Shape To Draw To Null
+			shapeToDraw = null;
+
+			// Repaint The Canvas
+			repaint();
+		}
+		else if (userTypedRedoKeys(e))
+		{
+			System.out.println("User Pressed 'Redo' Keyboard Shortcut");
+
+			// Make Sure There Are Shapes That Have Been Removed Via The Undo Feature, Otherwise Return
+			if (removedShapes.size() == 0)
+			{
+				return;
+			}
+
+			// Get The Last Shape Added To The Removed Shapes Stack
+			shapeToDraw = removedShapes.pop();
+
+			// Add The Shape To Draw Back To The List Of Shapes To Draw
+			shapesToDraw.add(shapeToDraw);
+
+			// Repaint The Canvas
+			repaint();
+		}
+	}
+
+	/**
+	 * Invoked when a key has been released.
+	 * See the class description for {@link KeyEvent} for a definition of
+	 * a key released event.
+	 *
+	 * @param e The KeyEvent that was performed by releasing a key on the Paint Application's Canvas.
+	 */
+	@Override
+	public void keyReleased(KeyEvent e)
+	{
+
+	}
+
+	private boolean userTypedUndoKeys(KeyEvent e)
+	{
+		// Windows Undo Shortcut: (Ctrl + Z)
+		// Mac OS Undo Shortcut: (Cmd + Z) WITHOUT Shift Down
+		return (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Z) ||
+				(e.isMetaDown() && e.getKeyCode() == KeyEvent.VK_Z && !e.isShiftDown());
+	}
+
+	private boolean userTypedRedoKeys(KeyEvent e)
+	{
+		// Windows Redo Shortcut: (Ctrl + Y)
+		// Mac OS Redo Shortcuts: (Cmd + Y) OR (Cmd + Shift + Z)
+		return (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Y) ||
+				(e.isMetaDown() && e.getKeyCode() == KeyEvent.VK_Y) ||
+				(e.isMetaDown() && e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_Z);
 	}
 }
