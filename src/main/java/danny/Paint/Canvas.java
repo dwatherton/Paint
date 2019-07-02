@@ -172,7 +172,7 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener, KeyLi
 		// If Right-Click And Shape To Draw Is Not Null, Remove Shape From The List Of Shapes To Draw And Null It Out (Stops Drawing The Dragged Shape Being Drawn)
 		if (isLeftMouseButtonDown && e.getButton() == MouseEvent.BUTTON3 && shapeToDraw != null)
 		{
-			shapesToDraw.removeIf(s -> s != null && (s.getStartPoint() == shapeToDraw.getStartPoint() && s.getEndPoint() == shapeToDraw.getEndPoint()));
+			shapesToDraw.remove(shapeToDraw);
 			shapeToDraw = null;
 			repaint();
 		}
@@ -198,7 +198,7 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener, KeyLi
 			{
 				// Create A Shape To Draw
 				shapeToDraw = new ShapeToDraw(e.getPoint(), e.getPoint(), paintColor, shape, brushSize, false);
-				shapesToDraw.add(shapeToDraw);
+				addShapeToShapesToDraw();
 
 				// If The User Has Hit Undo And Added Shapes To The Removed Shapes Stack
 				if (removedShapes.size() >= 1)
@@ -230,9 +230,6 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener, KeyLi
 			{
 				// Update End Point So The User Can See Their Final Shape
 				shapeToDraw.setEndPoint(e.getPoint());
-
-				// Save The Shape To Draw
-				shapesToDraw.add(shapeToDraw);
 
 				// For Drawing To The Canvas As The User Releases The Mouse Button!!! (IMPORTANT)
 				repaint();
@@ -287,10 +284,7 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener, KeyLi
 				{
 					// If The Current Paint Shape Is Point, Draw One Point Each Time The Mouse Drags (Free-Hand Painting)
 					shapeToDraw = new ShapeToDraw(e.getPoint(), e.getPoint(), paintColor, shape, brushSize, false);
-					if (!shapesToDraw.contains(shapeToDraw))
-					{
-						shapesToDraw.add(shapeToDraw);
-					}
+					addShapeToShapesToDraw();
 				}
 				break;
 			}
@@ -364,7 +358,7 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener, KeyLi
 			removedShapes.push(shapeToDraw);
 
 			// Remove The Shape To Draw From The List Of Shapes To Draw
-			shapesToDraw.removeIf(s -> s != null && (s.getStartPoint() == shapeToDraw.getStartPoint() && s.getEndPoint() == shapeToDraw.getEndPoint()));
+			shapesToDraw.remove(shapeToDraw);
 
 			// Set Shape To Draw To Null
 			shapeToDraw = null;
@@ -391,6 +385,24 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener, KeyLi
 			// Repaint The Canvas
 			repaint();
 		}
+		else if (userPressedDebugKeys(e))
+		{
+			int i = 1;
+			for (ShapeToDraw shape : shapesToDraw)
+			{
+				System.out.println(
+						"\n" +
+						"Shape Number: " + i++ + "\n" +
+						"Start Point: " + shape.getStartPoint() + "\n" +
+						"End Point: " + shape.getEndPoint() + "\n" +
+						"Paint Color: " + shape.getPaintColor() + "\n" +
+						"Shape: " + shape.getShape() + "\n" +
+						"Brush Size: " + shape.getBrushSize() + "\n" +
+						"Is Filled: " + shape.isFilled()
+						+ "\n"
+				);
+			}
+		}
 	}
 
 	/**
@@ -404,6 +416,22 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener, KeyLi
 	public void keyReleased(KeyEvent e)
 	{
 
+	}
+
+	private void addShapeToShapesToDraw()
+	{
+		// Loop Through The List Of Shapes To Draw To Make Sure An Identical Shape Has Not Already Been Added To It (Save Memory For Performance)
+		for (ShapeToDraw shape : shapesToDraw)
+		{
+			// Return If The Shape To Draw Is Already In The List
+			if (shapeToDraw.equals(shape))
+			{
+				return;
+			}
+		}
+
+		// Add The Unique Shape To The List Of Shapes To Draw
+		shapesToDraw.add(shapeToDraw);
 	}
 
 	private boolean userTypedUndoKeys(KeyEvent e)
@@ -421,5 +449,14 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener, KeyLi
 		return (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Y) ||
 				(e.isMetaDown() && e.getKeyCode() == KeyEvent.VK_Y) ||
 				(e.isMetaDown() && e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_Z);
+	}
+
+	private boolean userPressedDebugKeys(KeyEvent e)
+	{
+		// Windows Debug Shortcut: (Launcher.isDebugEnabled + Ctrl + D)
+		// Mac OS Debug Shortcut: (Launcher.isDebugEnabled + Cmd + D)
+		// Note: Launcher.isDebugEnabled Only Returns True When Launching The Paint Application With The Program Argument "--debug"
+		return (Launcher.isDebugEnabled && e.isControlDown() && e.getKeyCode() == KeyEvent.VK_D) ||
+				(Launcher.isDebugEnabled && e.isMetaDown() && e.getKeyCode() == KeyEvent.VK_D);
 	}
 }
