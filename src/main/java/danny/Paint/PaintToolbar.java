@@ -13,8 +13,6 @@ import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.color.ColorSpace;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
 class PaintToolbar
@@ -114,8 +112,6 @@ class PaintToolbar
 		JButton colorButton = new JButton(new ImageIcon(image));
 		colorButton.setBorder(new LineBorder(Color.DARK_GRAY, BORDER_THICKNESS));
 		colorButton.setSize(BUTTON_WIDTH / 2, BUTTON_HEIGHT / 2);
-		// Set Focusable To FALSE To Allow The Paint Application's Canvas To Be The Only Component With A Key Listener AKA The Default. (Avoids Tabbing To Canvas)!
-		colorButton.setFocusable(false);
 		return colorButton;
 	}
 
@@ -290,8 +286,6 @@ class PaintToolbar
 		shapeButton.setBorder(new LineBorder(Color.DARK_GRAY, 1));
 		shapeButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		shapeButton.setToolTipText(shape);
-		// Set Focusable To FALSE To Allow The Paint Application's Canvas To Be The Only Component With A Key Listener AKA The Default. (Avoids Tabbing To Canvas)!
-		shapeButton.setFocusable(false);
 		return shapeButton;
 	}
 
@@ -384,8 +378,6 @@ class PaintToolbar
 		brushSizeButton.setBorder(new LineBorder(Color.DARK_GRAY, 1));
 		brushSizeButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT / 5);
 		brushSizeButton.setToolTipText("Brush Size: " + brushSize);
-		// Set Focusable To FALSE To Allow The Paint Application's Canvas To Be The Only Component With A Key Listener AKA The Default. (Avoids Tabbing To Canvas)!
-		brushSizeButton.setFocusable(false);
 		return brushSizeButton;
 	}
 

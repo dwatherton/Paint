@@ -4,6 +4,7 @@ import lombok.Getter;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
 import javax.swing.JToolBar;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -20,6 +21,15 @@ class Window
 	@Getter
 	private static JFrame window;
 
+	@Getter
+	private static JMenuBar menuBar;
+
+	@Getter
+	private static JToolBar paintToolbar;
+
+	@Getter
+	private static Canvas canvas;
+
 	Window()
 	{
 		// Create A New Paint Application Window
@@ -33,7 +43,8 @@ class Window
 		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		// Create And Add Paint Application's MenuBar
-		window.setJMenuBar(new MenuBar().getMenuBar());
+		menuBar = new MenuBar().getMenuBar();
+		window.setJMenuBar(menuBar);
 
 		// Get The Paint Application Window's Content Pane
 		Container container = window.getContentPane();
@@ -43,8 +54,8 @@ class Window
 		container.setLayout(layout);
 
 		// Create A Paint Toolbar And Canvas For Painting
-		JToolBar paintToolbar = new PaintToolbar().getPaintToolbar();
-		Canvas canvas = new Canvas();
+		paintToolbar = new PaintToolbar().getPaintToolbar();
+		canvas = new Canvas();
 
 		// Set The Paint Toolbar And Canvas To Be Horizontally Parallel
 		layout.setHorizontalGroup(layout.createParallelGroup()

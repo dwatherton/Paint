@@ -10,8 +10,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -19,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-class Canvas extends JPanel implements MouseListener, MouseMotionListener, KeyListener
+class Canvas extends JPanel implements MouseListener, MouseMotionListener
 {
 	// Image To Add Color To Canvas Until Drawing Begins (Temporary)
 	private static final Image COLOR_PALETTE = new ImageIcon(Canvas.class.getResource("/colorpalette.png")).getImage();
@@ -52,13 +50,9 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener, KeyLi
 		// Set Canvas Background Color And Add Mouse Listener For Painting
 		setBackground(Color.WHITE);
 
-		// Set Canvas To Focusable To Allow The Key Listener For Undo/Redo Function
-		setFocusable(true);
-
-		// Add Listeners For Drawing With The Mouse And Undoing/Redoing With The Keyboard Shortcuts (Ctrl + Z) OR (Cmd + Z)/(Ctrl + Y) OR (Cmd + Shift + Z)
+		// Add Listeners For Drawing With The Mouse
 		addMouseListener(this);
 		addMouseMotionListener(this);
-		addKeyListener(this);
 	}
 
 	private void clearCanvas()
@@ -318,106 +312,6 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener, KeyLi
 
 	}
 
-	/**
-	 * Invoked when a key has been typed.
-	 * See the class description for {@link KeyEvent} for a definition of
-	 * a key typed event.
-	 *
-	 * @param e The KeyEvent that was performed by typing a key on the Paint Application's Canvas.
-	 */
-	@Override
-	public void keyTyped(KeyEvent e)
-	{
-
-	}
-
-	/**
-	 * Invoked when a key has been pressed.
-	 * See the class description for {@link KeyEvent} for a definition of
-	 * a key pressed event.
-	 *
-	 * @param e The KeyEvent that was performed by pressing a key on the Paint Application's Canvas.
-	 */
-	@Override
-	public void keyPressed(KeyEvent e)
-	{
-		if (userTypedUndoKeys(e))
-		{
-			System.out.println("User Pressed 'Undo' Keyboard Shortcut");
-
-			// Make Sure There Are Shapes Currently Drawn On The Canvas, Otherwise Return
-			if (shapesToDraw.size() == 0)
-			{
-				return;
-			}
-
-			// Get The Last Shape Added To The Shapes To Draw List
-			shapeToDraw = shapesToDraw.get(shapesToDraw.size() - 1);
-
-			// Add It To The Removed Shapes Stack
-			removedShapes.push(shapeToDraw);
-
-			// Remove The Shape To Draw From The List Of Shapes To Draw
-			shapesToDraw.remove(shapeToDraw);
-
-			// Set Shape To Draw To Null
-			shapeToDraw = null;
-
-			// Repaint The Canvas
-			repaint();
-		}
-		else if (userTypedRedoKeys(e))
-		{
-			System.out.println("User Pressed 'Redo' Keyboard Shortcut");
-
-			// Make Sure There Are Shapes That Have Been Removed Via The Undo Feature, Otherwise Return
-			if (removedShapes.size() == 0)
-			{
-				return;
-			}
-
-			// Get The Last Shape Added To The Removed Shapes Stack
-			shapeToDraw = removedShapes.pop();
-
-			// Add The Shape To Draw Back To The List Of Shapes To Draw
-			shapesToDraw.add(shapeToDraw);
-
-			// Repaint The Canvas
-			repaint();
-		}
-		else if (userPressedDebugKeys(e))
-		{
-			int i = 1;
-			for (ShapeToDraw shape : shapesToDraw)
-			{
-				System.out.println(
-						"\n" +
-						"Shape Number: " + i++ + "\n" +
-						"Start Point: " + shape.getStartPoint() + "\n" +
-						"End Point: " + shape.getEndPoint() + "\n" +
-						"Paint Color: " + shape.getPaintColor() + "\n" +
-						"Shape: " + shape.getShape() + "\n" +
-						"Brush Size: " + shape.getBrushSize() + "\n" +
-						"Is Filled: " + shape.isFilled()
-						+ "\n"
-				);
-			}
-		}
-	}
-
-	/**
-	 * Invoked when a key has been released.
-	 * See the class description for {@link KeyEvent} for a definition of
-	 * a key released event.
-	 *
-	 * @param e The KeyEvent that was performed by releasing a key on the Paint Application's Canvas.
-	 */
-	@Override
-	public void keyReleased(KeyEvent e)
-	{
-
-	}
-
 	private void addShapeToShapesToDraw()
 	{
 		// Loop Through The List Of Shapes To Draw To Make Sure An Identical Shape Has Not Already Been Added To It (Save Memory For Performance)
@@ -434,29 +328,64 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener, KeyLi
 		shapesToDraw.add(shapeToDraw);
 	}
 
-	private boolean userTypedUndoKeys(KeyEvent e)
+	void undoFunction()
 	{
-		// Windows Undo Shortcut: (Ctrl + Z)
-		// Mac OS Undo Shortcut: (Cmd + Z) WITHOUT Shift Down
-		return (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Z) ||
-				(e.isMetaDown() && e.getKeyCode() == KeyEvent.VK_Z && !e.isShiftDown());
+		// Make Sure There Are Shapes Currently Drawn On The Canvas, Otherwise Return
+		if (shapesToDraw.size() == 0)
+		{
+			return;
+		}
+
+		// Get The Last Shape Added To The Shapes To Draw List
+		shapeToDraw = shapesToDraw.get(shapesToDraw.size() - 1);
+
+		// Add It To The Removed Shapes Stack
+		removedShapes.push(shapeToDraw);
+
+		// Remove The Shape To Draw From The List Of Shapes To Draw
+		shapesToDraw.remove(shapeToDraw);
+
+		// Set Shape To Draw To Null
+		shapeToDraw = null;
+
+		// Repaint The Canvas
+		repaint();
 	}
 
-	private boolean userTypedRedoKeys(KeyEvent e)
+	void redoFunction()
 	{
-		// Windows Redo Shortcut: (Ctrl + Y)
-		// Mac OS Redo Shortcuts: (Cmd + Y) OR (Cmd + Shift + Z)
-		return (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Y) ||
-				(e.isMetaDown() && e.getKeyCode() == KeyEvent.VK_Y) ||
-				(e.isMetaDown() && e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_Z);
+		// Make Sure There Are Shapes That Have Been Removed Via The Undo Feature, Otherwise Return
+		if (removedShapes.size() == 0)
+		{
+			return;
+		}
+
+		// Get The Last Shape Added To The Removed Shapes Stack
+		shapeToDraw = removedShapes.pop();
+
+		// Add The Shape To Draw Back To The List Of Shapes To Draw
+		shapesToDraw.add(shapeToDraw);
+
+		// Repaint The Canvas
+		repaint();
 	}
 
-	private boolean userPressedDebugKeys(KeyEvent e)
+	void debugFunction()
 	{
-		// Windows Debug Shortcut: (Launcher.isDebugEnabled + Ctrl + D)
-		// Mac OS Debug Shortcut: (Launcher.isDebugEnabled + Cmd + D)
-		// Note: Launcher.isDebugEnabled Only Returns True When Launching The Paint Application With The Program Argument "--debug"
-		return (Launcher.isDebugEnabled && e.isControlDown() && e.getKeyCode() == KeyEvent.VK_D) ||
-				(Launcher.isDebugEnabled && e.isMetaDown() && e.getKeyCode() == KeyEvent.VK_D);
+		int i = 1;
+		for (ShapeToDraw shape : shapesToDraw)
+		{
+			System.out.println(
+					"\n" +
+					"Shape Number: " + i++ + "\n" +
+					"Start Point: " + shape.getStartPoint() + "\n" +
+					"End Point: " + shape.getEndPoint() + "\n" +
+					"Paint Color: " + shape.getPaintColor() + "\n" +
+					"Shape: " + shape.getShape() + "\n" +
+					"Brush Size: " + shape.getBrushSize() + "\n" +
+					"Is Filled: " + shape.isFilled()
+					+ "\n"
+			);
+		}
 	}
 }
