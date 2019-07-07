@@ -19,7 +19,7 @@ class Launcher
 				{
 					// Set Is Debug Enabled To True And Print Debug Mode To The Console
 					isDebugEnabled = true;
-					System.out.println("=*=*=*=*==*=*=*=*==*=*=*=*= Running Paint Application In Debug Mode =*=*=*=*==*=*=*=*==*=*=*=*=");
+					System.out.println("Running Paint Application In Debug Mode");
 				}
 			}
 		}

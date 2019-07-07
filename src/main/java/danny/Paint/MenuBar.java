@@ -83,14 +83,14 @@ class MenuBar implements ActionListener
 			{
 				System.out.println("User Selected 'File' > 'New Window'");
 
-				// Remove Action Listener's From Old Window Menu Bar And Dispose Of The Window
+				// Remove Action Listener's From Old Window Menu Bar And Close The Window
 				NEW_WINDOW.removeActionListener(this);
 				CLOSE.removeActionListener(this);
 				UNDO.removeActionListener(this);
 				REDO.removeActionListener(this);
 				ABOUT.removeActionListener(this);
 				DEBUG.removeActionListener(this);
-				Window.getWindow().dispose();
+				Window.close();
 
 				// Call Main In The Launcher Class To Run A New Paint Window On The Event-Dispatch Thread
 				Launcher.main(null);
@@ -100,8 +100,8 @@ class MenuBar implements ActionListener
 			{
 				System.out.println("User Selected 'File' > 'Close'");
 
-				// Dispose Of The Paint Application Window And Quit The Application
-				Window.getWindow().dispose();
+				// Close The Paint Application Window And Quit The Application
+				Window.close();
 				System.exit(0);
 				break;
 			}
@@ -110,16 +110,16 @@ class MenuBar implements ActionListener
 			{
 				System.out.println("User Selected 'Edit' > 'Undo'");
 
-				// Call The Undo Function In The Canvas Class
-				Window.getCanvas().undoFunction();
+				// Call The Undo Function In The Window Class
+				Window.undo();
 				break;
 			}
 			case "Redo":
 			{
 				System.out.println("User Selected 'Edit' > 'Redo'");
 
-				// Call The Redo Function In The Canvas Class
-				Window.getCanvas().redoFunction();
+				// Call The Redo Function In The Window Class
+				Window.redo();
 				break;
 			}
 			// Help Menu Options
@@ -134,8 +134,8 @@ class MenuBar implements ActionListener
 			{
 				System.out.println("User Selected 'Help' > 'Debug'");
 
-				// Call The Debug Function In The Canvas Class
-				Window.getCanvas().debugFunction();
+				// Call The Debug Function In The Window Class
+				Window.debug();
 				break;
 			}
 			default:

@@ -2,14 +2,12 @@ package danny.Paint;
 
 import lombok.Getter;
 import lombok.Setter;
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -19,17 +17,6 @@ import java.util.Stack;
 
 class Canvas extends JPanel implements MouseListener, MouseMotionListener
 {
-	// Image To Add Color To Canvas Until Drawing Begins (Temporary)
-	private static final Image COLOR_PALETTE = new ImageIcon(Canvas.class.getResource("/colorpalette.png")).getImage();
-
-	private boolean isDrawing;
-	private boolean isLeftMouseButtonDown;
-	private ShapeToDraw shapeToDraw;
-	private List<ShapeToDraw> shapesToDraw;
-
-	// Removed Shapes Stack Is For Undo/Redo Function
-	private Stack<ShapeToDraw> removedShapes;
-
 	@Getter
 	@Setter
 	private static Color paintColor = Color.BLACK;
@@ -41,6 +28,12 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	@Getter
 	@Setter
 	private static int brushSize = 1;
+
+	private boolean isDrawing;
+	private boolean isLeftMouseButtonDown;
+	private ShapeToDraw shapeToDraw;
+	private List<ShapeToDraw> shapesToDraw;
+	private Stack<ShapeToDraw> removedShapes;
 
 	Canvas()
 	{
@@ -58,22 +51,20 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	private void clearCanvas()
 	{
 		isDrawing = false;
+		isLeftMouseButtonDown = false;
 		shapeToDraw = null;
 		shapesToDraw = new ArrayList<>();
 		removedShapes = new Stack<>();
-		paintColor = Color.BLACK;
-		shape = Shape.POINT;
-		brushSize = 1;
 	}
 
 	private void paintInstructions(Graphics2D graphics2D)
 	{
 		// Set Image X and Image Y For Centering The Color Palette Image
-		int imageX = (getWidth() / 2) - (COLOR_PALETTE.getWidth(null) / 2);
-		int imageY = (getHeight() / 2) - (COLOR_PALETTE.getHeight(null) / 2);
+		int imageX = (getWidth() / 2) - (Window.COLOR_PALETTE.getWidth(null) / 2);
+		int imageY = (getHeight() / 2) - (Window.COLOR_PALETTE.getHeight(null) / 2);
 
 		// Draw Color Palette Image To Center Of Canvas
-		graphics2D.drawImage(COLOR_PALETTE, imageX, imageY, null);
+		graphics2D.drawImage(Window.COLOR_PALETTE, imageX, imageY, null);
 
 		// Get Font Metrics For Centering Instruction String
 		FontMetrics fm = graphics2D.getFontMetrics();
@@ -328,7 +319,7 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		shapesToDraw.add(shapeToDraw);
 	}
 
-	void undoFunction()
+	void undo()
 	{
 		// Make Sure There Are Shapes Currently Drawn On The Canvas, Otherwise Return
 		if (shapesToDraw.size() == 0)
@@ -352,7 +343,7 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		repaint();
 	}
 
-	void redoFunction()
+	void redo()
 	{
 		// Make Sure There Are Shapes That Have Been Removed Via The Undo Feature, Otherwise Return
 		if (removedShapes.size() == 0)
@@ -370,7 +361,7 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		repaint();
 	}
 
-	void debugFunction()
+	void debug()
 	{
 		int i = 1;
 		for (ShapeToDraw shape : shapesToDraw)

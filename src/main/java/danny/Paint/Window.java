@@ -1,6 +1,5 @@
 package danny.Paint;
 
-import lombok.Getter;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -12,22 +11,17 @@ import java.awt.Image;
 
 class Window
 {
-	private static final Image COLOR_PALETTE = new ImageIcon(Window.class.getResource("/colorpalette.png")).getImage();
+	static final Image COLOR_PALETTE = new ImageIcon(Window.class.getResource("/colorpalette.png")).getImage();
+
 	private static final String TITLE = "Java Paint Program by Daniel Atherton";
 	private static final int WIDTH = 800;
 	private static final int HEIGHT = 600;
 	private static final int TOOLBAR_HEIGHT = 60;
 
-	@Getter
+	// Components Of The Paint Application
 	private static JFrame window;
-
-	@Getter
 	private static JMenuBar menuBar;
-
-	@Getter
 	private static JToolBar paintToolbar;
-
-	@Getter
 	private static Canvas canvas;
 
 	Window()
@@ -76,5 +70,29 @@ class Window
 		window.pack();
 		window.setLocationRelativeTo(null);
 		window.setVisible(true);
+	}
+
+	static void close()
+	{
+		// Dispose Of The Paint Application Window
+		window.dispose();
+	}
+
+	static void undo()
+	{
+		// Call Undo Method In The Canvas Class
+		canvas.undo();
+	}
+
+	static void redo()
+	{
+		// Call Redo Method In The Canvas Class
+		canvas.redo();
+	}
+
+	static void debug()
+	{
+		// Call Debug Method In The Canvas Class
+		canvas.debug();
 	}
 }
