@@ -16,7 +16,7 @@ class Window
 	private static final String TITLE = "Java Paint Program by Daniel Atherton";
 	private static final int WIDTH = 800;
 	private static final int HEIGHT = 600;
-	private static final int TOOLBAR_HEIGHT = 60;
+	private static final int TOOLBAR_HEIGHT = 61;
 
 	// Components Of The Paint Application
 	private static JFrame window;
