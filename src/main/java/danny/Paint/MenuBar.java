@@ -19,6 +19,7 @@ class MenuBar implements ActionListener
 	private static final JMenuItem UNDO = new JMenuItem("Undo");
 	private static final JMenuItem REDO = new JMenuItem("Redo");
 	private static final JMenu HELP = new JMenu("Help");
+	private static final JMenuItem INSTRUCTIONS = new JMenuItem("Instructions");
 	private static final JMenuItem ABOUT = new JMenuItem("About");
 	private static final JMenuItem DEBUG = new JMenuItem("Debug");
 
@@ -41,6 +42,7 @@ class MenuBar implements ActionListener
 		menuBar.add(EDIT);
 
 		// Create Help Menu Structure And Add It To The MenuBar
+		HELP.add(INSTRUCTIONS);
 		HELP.add(ABOUT);
 		menuBar.add(HELP);
 
@@ -49,6 +51,7 @@ class MenuBar implements ActionListener
 		CLOSE.addActionListener(this);
 		UNDO.addActionListener(this);
 		REDO.addActionListener(this);
+		INSTRUCTIONS.addActionListener(this);
 		ABOUT.addActionListener(this);
 
 		// Set Accelerators For Each Menu Item (Keyboard Shortcuts For Quick Access)
@@ -56,6 +59,7 @@ class MenuBar implements ActionListener
 		CLOSE.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		UNDO.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		REDO.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		INSTRUCTIONS.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		ABOUT.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
 		// If Debug Is Enabled, Add The Debug Menu Option To The Help Menu
@@ -88,6 +92,7 @@ class MenuBar implements ActionListener
 				CLOSE.removeActionListener(this);
 				UNDO.removeActionListener(this);
 				REDO.removeActionListener(this);
+				INSTRUCTIONS.removeActionListener(this);
 				ABOUT.removeActionListener(this);
 				DEBUG.removeActionListener(this);
 				Window.close();
@@ -123,11 +128,13 @@ class MenuBar implements ActionListener
 				break;
 			}
 			// Help Menu Options
+			case "Instructions":
 			case "About":
 			{
-				System.out.println("User Selected 'Help' > 'About'");
+				System.out.println("User Selected 'Help' > '" + e.getActionCommand() + "'");
 
-				// Todo: Create and display a Window explaining the Paint Application when the user clicks "Help" > "About"
+				// Call The Show Help Function In The Window Class
+				Window.showHelp(e);
 				break;
 			}
 			case "Debug":

@@ -96,8 +96,6 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		}
 		else
 		{
-			// TODO: Add Support For Drawing Various Size Dots, Lines, And Shapes As Well As Drawing As The Mouse Moves
-
 			if (!shapesToDraw.isEmpty())
 			{
 				// Loop Through The Shapes To Draw
