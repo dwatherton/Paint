@@ -70,7 +70,7 @@ class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		FontMetrics fm = graphics2D.getFontMetrics();
 
 		// Set Instruction Message, Width, And Height (Ascent)
-		String instructions = "To Begin Painting Simply Select A Style And Begin Drawing!";
+		String instructions = "To Begin Painting Simply Select A Color, Style, And Line Thickness, Then Begin Drawing With The Cursor!";
 		int instructionsWidth = fm.stringWidth(instructions);
 		int instructionsHeight = fm.getAscent();
 
